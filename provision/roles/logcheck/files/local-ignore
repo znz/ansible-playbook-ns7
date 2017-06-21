@@ -1,0 +1,8 @@
+^\w{3} [ :[:digit:]]{11} [._[:alnum:]-]+ ansible-[_[:alnum:]]+:
+^\w{3} [ :[:digit:]]{11} [._[:alnum:]-]+ dbus\[[[:digit:]]+\]:
+^\w{3} [ :[:digit:]]{11} [._[:alnum:]-]+ kernel:
+^\w{3} [ :[:digit:]]{11} [._[:alnum:]-]+ ntpd\[[[:digit:]]+\]:
+^\w{3} [ :[:digit:]]{11} [._[:alnum:]-]+ postfix/master\[[[:digit:]]+\]: (daemon )?(started|reload) -- version 3\.1\.4, configuration /etc/postfix$
+^\w{3} [ :[:digit:]]{11} [._[:alnum:]-]+ systemd-logind\[[[:digit:]]+\]:
+^\w{3} [ :[:digit:]]{11} [._[:alnum:]-]+ systemd: pam_unix\(systemd-user:session\): session (opened|closed) for user
+^\w{3} [ :[:digit:]]{11} [._[:alnum:]-]+ systemd\[[[:digit:]]+\]:

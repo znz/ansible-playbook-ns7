@@ -1,0 +1,7 @@
+*.retry
+/.env
+/.vagrant/
+/easy-rsa/
+/provision/inventory/production
+/provision/roles/*.*
+/provision/vars/production.yml
