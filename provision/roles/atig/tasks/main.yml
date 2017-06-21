@@ -16,13 +16,29 @@
     uid: "{{ atig_user_uid }}"
     group: "{{ atig_group }}"
 
+- name: ".atig directory"
+  file:
+    state: directory
+    path: "{{ atig_root }}/.atig"
+    owner: "{{ atig_user }}"
+    group: "{{ atig_group }}"
+    mode: 0700
+
+- name: ".atig/oauth file"
+  copy:
+    content: "{{ atig_oauth|default('') }}"
+    dest: "{{ atig_root }}/.atig/oauth"
+    owner: "{{ atig_user }}"
+    group: "{{ atig_group }}"
+    mode: 0600
+
 - name: "Clone atig repository"
   become_user: "{{ atig_user }}"
   git:
     dest: "{{ atig_root }}/atig"
     repo: https://github.com/atig/atig
     depth: 1
-#  notify: "Restart atig service"
+  notify: "Restart atig service"
 
 - name: "bundle install"
   become_user: "{{ atig_user }}"
@@ -30,7 +46,7 @@
   args:
     chdir: "{{ atig_root }}/atig"
     creates: "{{ atig_root }}/vendor/bundle"
-#  notify: "Restart atig service"
+  notify: "Restart atig service"
 
 - name: "bundle update"
   become_user: "{{ atig_user }}"
@@ -39,45 +55,6 @@
     chdir: "{{ atig_root }}/atig"
   register: result
   changed_when: '"(was " in result.stdout'
-
-- name: "atig home directory"
-  file:
-    state: directory
-    path: "{{ atig_root }}/home"
-    owner: "{{ atig_user }}"
-    group: "{{ atig_group }}"
-    mode: 0755
-
-- name: "atig HOME directory per account"
-  file:
-    state: directory
-    path: "{{ atig_root }}/home/{{ item.atig_port }}"
-    owner: "{{ atig_user }}"
-    group: "{{ atig_group }}"
-    mode: 0755
-  with_items: "{{ atig }}"
-  notify: "Restart atig service"
-
-- name: "atig HOME/.atig directory per account"
-  file:
-    state: directory
-    path: "{{ atig_root }}/home/{{ item.atig_port }}/.atig"
-    owner: "{{ atig_user }}"
-    group: "{{ atig_group }}"
-    mode: 0755
-  with_items: "{{ atig }}"
-  notify: "Restart atig service"
-
-- name: "atig HOME/.atig/config per account"
-  template:
-    src: "atig.config.j2"
-    dest: "{{ atig_root }}/home/{{ item.atig_port }}/.atig/config"
-    owner: "{{ atig_user }}"
-    group: "{{ atig_group }}"
-    mode: 0640
-    validate: 'ruby -c %s'
-  with_items: "{{ atig }}"
-  notify: "Restart atig service"
 
 - name: "nadoka rc for atig"
   template:
