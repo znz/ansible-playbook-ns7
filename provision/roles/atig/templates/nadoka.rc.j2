@@ -1,0 +1,102 @@
+## -*-ruby-*- vim: set filetype=ruby :
+
+class NADOKA_Config < Nadoka::NDK_ConfigBase
+  # 0: quiet
+  # 1: ch log only
+  # 2: normal
+  # 3: debug
+  Loglevel = 2
+
+  ###############################################
+  # client server setting
+  Client_server_port = {{ item.port }}
+  Client_server_host = {{ item.host }}
+  Client_server_pass = {{ item.pass }}
+  Client_server_acl  = %q{
+{{ item.acl }}
+  }
+
+  Servers = [
+    {
+      host: 'localhost',
+      port: {{ item.atig_port }},
+    },
+  ]
+
+  User     = '{{ item.username }}'
+  Nick     = User
+  Hostname = Socket.gethostname
+  Realname = '{{ item.realname }}'
+  Mode     = nil
+
+  Away_Message = 'away'
+  Away_Nick    = nil
+
+{% raw %}
+  Default_log = {
+    :file           => '${setting_name}/${channel_name}/%y/%m%d.log',
+    :time_format    => '%H:%M:%S',
+    :message_format => {
+      'PRIVMSG' => '<{nick}> {msg}',
+      'NOTICE'  => '{{nick}} {msg}',
+      'JOIN'    => '+ {nick} ({prefix:user}@{prefix:host})',
+      'NICK'    => '* {nick} -> {newnick} ({prefix:user}@{prefix:host})',
+      'QUIT'    => '- {nick} QUIT: ({msg}) ({prefix:user}@{prefix:host})',
+      'PART'    => '- {nick} PART: ({msg}) ({prefix:user}@{prefix:host})',
+      'KICK'    => '/ {kicker} KICK: {nick} ({msg}) ({prefix:user}@{prefix:host})',
+      'MODE'    => '* {nick} MODE: ({msg})',
+      'TOPIC'   => '* {nick} TOPIC: ({msg})',
+      'SYSTEM'  => '[NDK] {orig}',
+      'OTHER'   => '{orig}',
+      'SIMPLE'  => '{orig}',
+    },
+  }
+
+  System_log = {
+    :file           => '${setting_name}/system/%y%m.log',
+    :time_format    => '%y/%m/%d-%H:%M:%S',
+    :message_format => {
+      'PRIVMSG' => '{ch} <{nick}> {msg}',
+      'NOTICE'  => '{ch} {{nick}} {msg}',
+      'JOIN'    => '{ch} + {nick} ({prefix:user}@{prefix:host})',
+      'NICK'    => '{ch} * {nick} -> {newnick} ({prefix:user}@{prefix:host})',
+      'QUIT'    => '{ch} - {nick} QUIT: ({msg}) ({prefix:user}@{prefix:host})',
+      'PART'    => '{ch} - {nick} PART: ({msg}) ({prefix:user}@{prefix:host})',
+      'KICK'    => '{ch} / {kicker} KICK: {nick} ({msg}) ({prefix:user}@{prefix:host})',
+      'MODE'    => '{ch} * {nick} MODE: ({msg})',
+      'TOPIC'   => '{ch} * {nick} TOPIC: ({msg})',
+      'SYSTEM'  => '[NDK] {orig}',
+      'OTHER'   => nil,
+      'SIMPLE'  => nil,
+    },
+  }
+
+  Talk_log = {
+    :file           => '${setting_name}/talk/%y/%m%d.log',
+    :time_format    => Default_log[:time_format],
+    :message_format => {
+      'PRIVMSG' => '[{sender} => {receiver}] {msg}',
+      'NOTICE'  => '{{sender} => {receiver}} {msg}',
+    }
+  }
+{% endraw %}
+
+  Channel_info = {
+  }
+
+  BackLog_Lines = 20
+
+  Log_dir = '~/log'
+
+  Plugins_dir = [
+    '{{ nadoka_fprog_plugins }}',
+    '{{ nadoka_nadoka }}/plugins',
+  ]
+
+  BotConfig = [
+    :BackLogBot, # strongly recommended
+  ]
+
+  Privmsg_Filter = nil
+  Notice_Filter  = nil
+end

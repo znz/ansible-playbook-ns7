@@ -54,9 +54,28 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           channel_info: ENV['NADOKA_CHANNEL_INFO'],
         },
       ],
+      atig: ENV['ATIG_USERNAMES'].split(',').map.with_index { |username, idx|
+        {
+          username: username,
+          realname: 'sid only stream',
+          atig_port: 16660+idx,
+          port: 6660+idx,
+          host: 'nil',
+          pass: '"dummy_pass"',
+          acl: <<-ACL,
+            deny all
+            allow 127.0.0.1
+            allow ::1
+            allow 192.168.8.0/24
+          ACL
+          allow_from: "192.168.8.0/24",
+          atig_config: '',
+        }
+      },
       postfix_relay_smtp_server: ENV['SMTP_SERVER'],
       postfix_relay_smtp_user: ENV['SMTP_USER'],
       postfix_relay_smtp_pass: ENV['SMTP_PASS'],
     }
+
   end
 end

@@ -1,0 +1,26 @@
+---
+# defaults file for znz.atig
+atig_root: "/home/atig"
+
+atig_packages:
+- git
+- ruby
+- bundler
+- libsqlite3-dev
+- acl # https://docs.ansible.com/ansible/become.html#becoming-an-unprivileged-user
+
+atig_user: atig
+atig_user_uid: 941
+atig_group: "{{ atig_user }}"
+atig_group_gid: "{{ atig_user_uid }}"
+
+atig:
+- username: "TwitterAccount" # https://atig.github.io/quickstart.html
+  realname: "sid only stream" # https://atig.github.io/options.html
+  acl: |
+    deny all
+    allow 127.0.0.1
+    allow ::1
+    allow 192.168.8.0/24
+
+atig_bundle_command: "/usr/bin/bundle"

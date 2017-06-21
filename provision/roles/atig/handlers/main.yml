@@ -1,0 +1,17 @@
+---
+# handlers file for znz.atig
+- name: "Restart atig service"
+  systemd:
+    name: "atig@{{ item.atig_port }}.service"
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+  with_items: "{{ atig }}"
+
+- name: "Restart nadoka-atig service"
+  systemd:
+    name: "nadoka@atig-{{ item.username }}.service"
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+  with_items: "{{ atig }}"

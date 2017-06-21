@@ -1,0 +1,110 @@
+---
+# tasks file for znz.atig
+- name: "Install packages"
+  apt:
+    name: "{{ item }}"
+  with_items: "{{ atig_packages }}"
+
+- name: "Add atig group"
+  group:
+    name: "{{ atig_group }}"
+    gid: "{{ atig_group_gid }}"
+- name: "Add atig user"
+  user:
+    name: "{{ atig_user }}"
+    comment: "atig user"
+    uid: "{{ atig_user_uid }}"
+    group: "{{ atig_group }}"
+
+- name: "Clone atig repository"
+  become_user: "{{ atig_user }}"
+  git:
+    dest: "{{ atig_root }}/atig"
+    repo: https://github.com/atig/atig
+    depth: 1
+#  notify: "Restart atig service"
+
+- name: "bundle install"
+  become_user: "{{ atig_user }}"
+  command: "bundle install --path {{ atig_root }}/vendor/bundle"
+  args:
+    chdir: "{{ atig_root }}/atig"
+    creates: "{{ atig_root }}/vendor/bundle"
+#  notify: "Restart atig service"
+
+- name: "bundle update"
+  become_user: "{{ atig_user }}"
+  command: "bundle update"
+  args:
+    chdir: "{{ atig_root }}/atig"
+  register: result
+  changed_when: '"(was " in result.stdout'
+
+- name: "atig home directory"
+  file:
+    state: directory
+    path: "{{ atig_root }}/home"
+    owner: "{{ atig_user }}"
+    group: "{{ atig_group }}"
+    mode: 0755
+
+- name: "atig HOME directory per account"
+  file:
+    state: directory
+    path: "{{ atig_root }}/home/{{ item.atig_port }}"
+    owner: "{{ atig_user }}"
+    group: "{{ atig_group }}"
+    mode: 0755
+  with_items: "{{ atig }}"
+  notify: "Restart atig service"
+
+- name: "atig HOME/.atig directory per account"
+  file:
+    state: directory
+    path: "{{ atig_root }}/home/{{ item.atig_port }}/.atig"
+    owner: "{{ atig_user }}"
+    group: "{{ atig_group }}"
+    mode: 0755
+  with_items: "{{ atig }}"
+  notify: "Restart atig service"
+
+- name: "atig HOME/.atig/config per account"
+  template:
+    src: "atig.config.j2"
+    dest: "{{ atig_root }}/home/{{ item.atig_port }}/.atig/config"
+    owner: "{{ atig_user }}"
+    group: "{{ atig_group }}"
+    mode: 0640
+    validate: 'ruby -c %s'
+  with_items: "{{ atig }}"
+  notify: "Restart atig service"
+
+- name: "nadoka rc for atig"
+  template:
+    src: "nadoka.rc.j2"
+    dest: "{{ nadoka_root }}/atig-{{ item.username }}.rc"
+    owner: "root"
+    group: "nadoka"
+    mode: 0640
+    validate: 'ruby -c %s'
+  with_items: "{{ atig }}"
+  notify: "Restart nadoka-atig service"
+
+- name: "atig service file for systemd"
+  template:
+    src: "atig.service.j2"
+    dest: "/etc/systemd/system/atig@.service"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  notify: "Restart atig service"
+
+# ufw out port
+- name: "Allow in to IRC server"
+  ufw:
+    rule: allow
+    direction: in
+    to_port: "{{ item.port }}"
+    from_ip: "{{ item.allow_from }}"
+    proto: tcp
+  with_items: "{{ atig }}"

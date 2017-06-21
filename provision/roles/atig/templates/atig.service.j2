@@ -1,0 +1,16 @@
+[Unit]
+Description=atig daemon for %I
+After=network.target
+
+[Service]
+Environment="HOME={{ atig_root }}/home/%i"
+WorkingDirectory={{ atig_root }}/atig
+ExecStart={{ atig_bundle_command }} exec atig --debug --port %i
+Restart=always
+PrivateTmp=yes
+User={{ atig_user }}
+Group={{ atig_group }}
+OOMScoreAdjust=1000
+
+[Install]
+WantedBy=multi-user.target
