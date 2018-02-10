@@ -9,9 +9,6 @@
 - src: https://github.com/znz/ansible-role-nadoka
   version: master
   name: znz.nadoka
-- src: https://github.com/znz/ansible-role-remotelog
-  version: master
-  name: znz.remotelog
 - src: https://github.com/znz/ansible-role-openvpn-server
   version: master
   name: znz.openvpn-server
