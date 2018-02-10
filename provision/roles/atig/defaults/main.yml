@@ -8,6 +8,7 @@ atig_packages:
 - bundler
 - libsqlite3-dev
 - acl # https://docs.ansible.com/ansible/become.html#becoming-an-unprivileged-user
+- libidn11-dev # idn-ruby gem
 
 atig_user: atig
 atig_user_uid: 941
