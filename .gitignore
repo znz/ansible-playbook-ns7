@@ -1,7 +1,10 @@
 *.retry
 /.env
 /.vagrant/
+/base.conf
+/client-config-files/
 /easy-rsa/
 /provision/inventory/production
 /provision/roles/*.*
 /provision/vars/production.yml
+/ta.key
