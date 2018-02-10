@@ -6,7 +6,7 @@ VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname = ENV['VM_HOSTNAME'] || 'ovpn.127.0.0.1.nip.io'
-  config.vm.box = 'debian/stretch64'
+  config.vm.box = 'bento/debian-9.3'
 
   config.vm.provider 'virtualbox' do |vb|
     # Don't boot with headless mode
