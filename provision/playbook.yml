@@ -40,6 +40,9 @@
       replace: '#\1'
   - name: 'Install logwatch'
     apt: name=logwatch
+  - name: 'Install curl'
+    # openvpn hook to slack
+    apt: name=curl
   - name: "Allow ipv4 forward"
     sysctl:
       name: net.ipv4.ip_forward
