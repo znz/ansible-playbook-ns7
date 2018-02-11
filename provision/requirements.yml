@@ -1,6 +1,9 @@
 ---
 - src: znzj.ja_jp
-- src: znz.ufw
+#- src: znz.ufw
+- src: https://github.com/znz/ansible-role-ufw
+  version: master
+  name: znz.ufw
 - src: znz.journald
 - src: https://github.com/znz/ansible-role-sshd
   version: master

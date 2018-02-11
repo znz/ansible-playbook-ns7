@@ -13,6 +13,8 @@
     ufw_allow_in_tcp:
     - comment: "HTTP"
       port: 80
+    - comment: "HTTPS"
+      port: 443
     ufw_allow_out_tcp:
     - comment: "HTTP"
       port: 80
@@ -20,6 +22,8 @@
       port: 22
     #- comment: "SMTPS"
     #  port: 465
+    ufw_before_rule: "{{ openvpn_nat_rules }}"
+    ufw_before6_rule: "{{ openvpn_nat_rules_6 }}"
   - role: znz.journald
   - role: znz.sshd
   - role: logcheck
@@ -36,3 +40,33 @@
       replace: '#\1'
   - name: 'Install logwatch'
     apt: name=logwatch
+  - name: "Allow ipv4 forward"
+    sysctl:
+      name: net.ipv4.ip_forward
+      value: 1
+      sysctl_file: /etc/sysctl.d/50-local.conf
+      sysctl_set: yes
+      reload: yes
+  - name: "Allow forward ipv4"
+    ufw:
+      from_ip: "{{ allow_forward_from_ipv4 }}"
+      proto: tcp
+      route: yes
+      rule: allow
+      to_port: "{{ item }}"
+    with_items: "{{ allow_forward_tcp_ports }}"
+  - name: "Allow ipv6 forward"
+    sysctl:
+      name: net.ipv6.conf.all.forwarding
+      value: 1
+      sysctl_file: /etc/sysctl.d/50-local.conf
+      sysctl_set: yes
+      reload: yes
+  - name: "Allow forward ipv6"
+    ufw:
+      from_ip: "{{ allow_forward_from_ipv6 }}"
+      proto: tcp
+      route: yes
+      rule: allow
+      to_port: "{{ item }}"
+    with_items: "{{ allow_forward_tcp_ports }}"

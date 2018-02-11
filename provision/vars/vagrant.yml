@@ -6,7 +6,10 @@ sshd_allow_users:
 - 'vagrant'
 
 sshd_allow_tcp_wrappers:
+- '127.0.0.1 [::1]'
 - '10.'
+- '192.168.0.0/16'
+- '[fd00:abcd:abcd:abcd::]/64'
 - '.jp'
 
 byobu_users:
@@ -18,6 +21,70 @@ nadoka_irc_pass: "nil"
 nadoka_irc_ssl_params: '{}'
 nadoka_channel_info: "'#private' => { key: 'channelkey' }"
 
-#postfix_relay_smtp_server: 'smtp.example.com'
-#postfix_relay_smtp_user: 'smtpuser'
-#postfix_relay_smtp_pass: 'smtppass'
+openvpn_server_network_name: "default"
+openvpn_server_port: 1194
+openvpn_server_network: "192.168.8.0 255.255.255.0"
+openvpn_server_more_config: |
+  #ccd-exclusive
+  route 192.168.9.0 255.255.255.0
+  push "route 192.168.9.0 255.255.255.0"
+  script-security 2
+  client-connect connect.sh
+  client-disconnect disconnect.sh
+  server-ipv6 fd00:abcd:abcd:abcd::/64
+  push "route-ipv6 fd00:abcd:abcd:abcd::/64"
+  push "route-ipv6 2000::/3"
+  #push "dhcp-option DNS ipv6-dns-server-address"
+
+# require 'socket'
+# ai = Socket.ip_address_list[1]
+# ipv6 = sprintf('fd00:%02x%02x:%02x%02x:%04x::/64', *ai.ip_address.split('.'), rand(0..0xffff))
+# puts "server-ipv6 #{ipv6}"
+# puts "push \"route-ipv6 #{ipv6}\""
+
+openvpn_server_connect_hook: |
+  ruby -r socket -e 'UNIXSocket.open(ARGV.shift){|s|s.puts ARGV.shift}' '/run/nadoka/fprog/_23servers.sock' "$message"
+openvpn_server_disconnect_hook: |
+  ruby -r socket -e 'UNIXSocket.open(ARGV.shift){|s|s.puts ARGV.shift}' '/run/nadoka/fprog/_23servers.sock' "$message"
+#openvpn_server_slack_conf: |
+#  url='https://hooks.slack.com/services/...'
+#  username="OpenVPN"
+#  to="#openvpn"
+
+openvpn_server_ccd:
+  server1: |
+    ifconfig-push 192.168.9.253 192.168.9.254
+  server2: |
+    ifconfig-push 192.168.9.249 192.168.9.250
+  server3: |
+    ifconfig-push 192.168.9.245 192.168.9.246
+
+openvpn_nat_rules: |
+  # START OPENVPN RULES
+  # NAT table rules
+  *nat
+  :POSTROUTING ACCEPT [0:0]
+  -F
+  # Allow traffic from OpenVPN client to enp0s3
+  -A POSTROUTING -s 192.168.8.0/24 -o enp0s3 -j MASQUERADE
+  # Allow traffic from 192.168.1.0/24 (server's LAN subnet) to OpenVPN client (for ping)
+  #-A POSTROUTING -s 192.168.1.0/24 -o tun0 -j MASQUERADE
+  COMMIT
+  # END OPENVPN RULES
+
+openvpn_nat_rules_6: |
+  # START OPENVPN RULES
+  # NAT table rules
+  *nat
+  :POSTROUTING ACCEPT [0:0]
+  -F
+  # Allow traffic from OpenVPN client to enp0s3
+  -A POSTROUTING -s fd00:abcd:abcd:abcd::/64 -o enp0s3 -j MASQUERADE
+  COMMIT
+  # END OPENVPN RULES
+
+allow_forward_from_ipv4: "192.168.8.0/24"
+allow_forward_from_ipv6: "fd00:abcd:abcd:abcd::/64"
+allow_forward_tcp_ports:
+- 80
+- 443
