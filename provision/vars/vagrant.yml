@@ -66,7 +66,7 @@ openvpn_nat_rules: |
   :POSTROUTING ACCEPT [0:0]
   -F
   # Allow traffic from OpenVPN client to enp0s3
-  -A POSTROUTING -s 192.168.8.0/24 -o enp0s3 -j MASQUERADE
+  -A POSTROUTING -s 192.168.8.0/24 -o en+ -j MASQUERADE
   # Allow traffic from 192.168.1.0/24 (server's LAN subnet) to OpenVPN client (for ping)
   #-A POSTROUTING -s 192.168.1.0/24 -o tun0 -j MASQUERADE
   COMMIT
@@ -79,7 +79,7 @@ openvpn_nat_rules_6: |
   :POSTROUTING ACCEPT [0:0]
   -F
   # Allow traffic from OpenVPN client to enp0s3
-  -A POSTROUTING -s fd00:abcd:abcd:abcd::/64 -o enp0s3 -j MASQUERADE
+  -A POSTROUTING -s fd00:abcd:abcd:abcd::/64 -o en+ -j MASQUERADE
   COMMIT
   # END OPENVPN RULES
 
