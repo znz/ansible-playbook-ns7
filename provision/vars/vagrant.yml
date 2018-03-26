@@ -87,4 +87,7 @@ allow_forward_from_ipv4: "192.168.8.0/24"
 allow_forward_from_ipv6: "fd00:abcd:abcd:abcd::/64"
 allow_forward_tcp_ports:
 - 80
+allow_forward_udp_ports: []
+allow_forward_both_ports:
+- 53
 - 443

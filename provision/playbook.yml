@@ -50,7 +50,7 @@
       sysctl_file: /etc/sysctl.d/50-local.conf
       sysctl_set: yes
       reload: yes
-  - name: "Allow forward ipv4"
+  - name: "Allow forward tcp ports of ipv4"
     ufw:
       from_ip: "{{ allow_forward_from_ipv4 }}"
       proto: tcp
@@ -58,6 +58,21 @@
       rule: allow
       to_port: "{{ item }}"
     with_items: "{{ allow_forward_tcp_ports }}"
+  - name: "Allow forward udp ports of ipv4"
+    ufw:
+      from_ip: "{{ allow_forward_from_ipv4 }}"
+      proto: udp
+      route: yes
+      rule: allow
+      to_port: "{{ item }}"
+    with_items: "{{ allow_forward_udp_ports }}"
+  - name: "Allow forward tcp/udp ports of ipv4"
+    ufw:
+      from_ip: "{{ allow_forward_from_ipv4 }}"
+      route: yes
+      rule: allow
+      to_port: "{{ item }}"
+    with_items: "{{ allow_forward_both_ports }}"
   - name: "Allow ipv6 forward"
     sysctl:
       name: net.ipv6.conf.all.forwarding
@@ -65,7 +80,7 @@
       sysctl_file: /etc/sysctl.d/50-local.conf
       sysctl_set: yes
       reload: yes
-  - name: "Allow forward ipv6"
+  - name: "Allow forward tcp ports of ipv6"
     ufw:
       from_ip: "{{ allow_forward_from_ipv6 }}"
       proto: tcp
@@ -73,3 +88,18 @@
       rule: allow
       to_port: "{{ item }}"
     with_items: "{{ allow_forward_tcp_ports }}"
+  - name: "Allow forward udp ports of ipv6"
+    ufw:
+      from_ip: "{{ allow_forward_from_ipv6 }}"
+      proto: udp
+      route: yes
+      rule: allow
+      to_port: "{{ item }}"
+    with_items: "{{ allow_forward_udp_ports }}"
+  - name: "Allow forward tcp/udp ports of ipv6"
+    ufw:
+      from_ip: "{{ allow_forward_from_ipv6 }}"
+      route: yes
+      rule: allow
+      to_port: "{{ item }}"
+    with_items: "{{ allow_forward_both_ports }}"
