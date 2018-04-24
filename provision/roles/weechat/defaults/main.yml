@@ -1,0 +1,6 @@
+---
+weechat_dir: "/home/weechat/.weechat"
+weechat_user: weechat
+weechat_user_uid: 942
+weechat_group: "{{ weechat_user }}"
+weechat_group_gid: "{{ weechat_user_uid }}"

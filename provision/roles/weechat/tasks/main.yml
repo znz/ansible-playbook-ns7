@@ -1,0 +1,62 @@
+---
+- name: "Install apt-transport-https"
+  apt:
+    name: apt-transport-https
+- name: "apt-key for weechat"
+  apt_key:
+    id: "11E9DE8848F2B65222AA75B8D1820DB22A11534E"
+    keyserver: "hkp://p80.pool.sks-keyservers.net:80"
+    state: present
+- name: "sources.list for weechat"
+  template:
+    src: "weechat.list.j2"
+    dest: "/etc/apt/sources.list.d/weechat.list"
+    owner: "root"
+    group: "root"
+    mode: 0644
+  register: weechat_sources_list
+- name: "apt update if changed"
+  apt:
+    update_cache: yes
+  when: weechat_sources_list is changed
+- name: "apt update if old"
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: weechat_sources_list is skipped
+- name: "Install weechat"
+  apt:
+    name:
+    - weechat-curses
+    - weechat-plugins
+    - weechat-python
+    - weechat-perl
+- name: "Install python-websocket for wee-slack"
+  apt:
+    name: "python-websocket"
+
+- name: "Add weechat group"
+  group:
+    name: "{{ weechat_group }}"
+    gid: "{{ weechat_group_gid }}"
+- name: "Add weechat user"
+  user:
+    name: "{{ weechat_user }}"
+    comment: "weechat user"
+    uid: "{{ weechat_user_uid }}"
+    group: "{{ weechat_group }}"
+
+- name: "Create weechat dir"
+  file:
+    path: "{{ weechat_dir }}"
+    owner: "{{ weechat_user }}"
+    group: "{{ weechat_group }}"
+    state: directory
+    mode: 0755
+- name: "Install weemoji.json"
+  get_url:
+    url: "https://cdn.rawgit.com/wee-slack/wee-slack/master/weemoji.json"
+    dest: "{{ weechat_dir }}/weemoji.json"
+    owner: "{{ weechat_user }}"
+    group: "{{ weechat_group }}"
+    mode: 0644

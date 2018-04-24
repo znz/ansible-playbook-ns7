@@ -102,3 +102,7 @@ telnet で接続したりできます。
 インポートした設定は、「%USERPROFILE%\OpenVPN\config」に入っているので、
 インポートし直す場合はエクスプローラーなどで削除してからインポートし直してください。
 ```
+
+## Another playbook
+
+- `ansible-playbook -i provision/inventory/production provision/weechat.yml -b -K`
