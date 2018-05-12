@@ -32,6 +32,12 @@
     group: "{{ atig_group }}"
     mode: 0600
 
+- name: "git stash"
+  become_user: "{{ atig_user }}"
+  command: "git stash"
+  args:
+    chdir: "{{ atig_root }}/atig"
+
 - name: "Clone atig repository"
   become_user: "{{ atig_user }}"
   git:
@@ -39,6 +45,13 @@
     repo: https://github.com/atig/atig
     depth: 1
   notify: "Restart atig service"
+
+- name: "git stash pop"
+  become_user: "{{ atig_user }}"
+  command: "git stash pop"
+  args:
+    chdir: "{{ atig_root }}/atig"
+  ignore_errors: yes
 
 - name: "bundle install"
   become_user: "{{ atig_user }}"
@@ -55,6 +68,13 @@
     chdir: "{{ atig_root }}/atig"
   register: result
   changed_when: '"(was " in result.stdout'
+
+- name: "Add workaround for atig/command/status.rb:8:in `<class:Status>': uninitialized constant Twitter::Validation (NameError)"
+  lineinfile:
+    path: "{{ atig_root }}/atig/lib/atig/command/status.rb"
+    regexp: '^(.*)::Twitter::Validation(.*)$'
+    line: '\1::Twitter::TwitterText::Validation\2'
+    backrefs: yes
 
 - name: "nadoka rc for atig"
   template:
