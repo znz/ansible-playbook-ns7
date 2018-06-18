@@ -41,9 +41,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       ansible.galaxy_command = 'ansible-galaxy install --role-file=%{role_file} --roles-path=%{roles_path}'
     end
 
-    ansible.extra_vars = {
+    extra_vars = {
       stage: 'vagrant',
-      nadoka: [
+      postfix_relay_smtp_server: ENV['SMTP_SERVER'],
+      postfix_relay_smtp_user: ENV['SMTP_USER'],
+      postfix_relay_smtp_pass: ENV['SMTP_PASS'],
+    }
+    extra_vars[:nadoka] = [
         {
           service_name: ENV['NADOKA_SERVICE_NAME'],
           irc_host: ENV['NADOKA_IRC_HOST'],
@@ -53,29 +57,25 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           irc_nick: 'User',
           channel_info: ENV['NADOKA_CHANNEL_INFO'],
         },
-      ],
-      atig: ENV['ATIG_USERNAMES'].to_s.split(',').map.with_index { |username, idx|
-        {
-          username: username,
-          realname: 'sid only stream',
-          atig_port: 16668+idx,
-          port: 26668+idx,
-          host: 'nil',
-          pass: '"dummy_pass"',
-          acl: <<-ACL,
-            deny all
-            allow 127.0.0.1
-            allow ::1
-            allow 192.168.8.0/24
-          ACL
-          allow_from: "192.168.8.0/24",
-        }
-      },
-      atig_oauth: ENV['ATIG_OAUTH'],
-      postfix_relay_smtp_server: ENV['SMTP_SERVER'],
-      postfix_relay_smtp_user: ENV['SMTP_USER'],
-      postfix_relay_smtp_pass: ENV['SMTP_PASS'],
+    ] if ENV.key?('NADOKA_SERVICE_NAME')
+    extra_vars[:atig] = ENV['ATIG_USERNAMES'].to_s.split(',').map.with_index { |username, idx|
+      {
+        username: username,
+        realname: 'sid only stream',
+        atig_port: 16668+idx,
+        port: 26668+idx,
+        host: 'nil',
+        pass: '"dummy_pass"',
+        acl: <<-ACL,
+          deny all
+          allow 127.0.0.1
+          allow ::1
+          allow 192.168.8.0/24
+        ACL
+        allow_from: "192.168.8.0/24",
+      }
     }
-
+    extra_vars[:atig_oauth] = ENV['ATIG_OAUTH']
+    ansible.extra_vars = extra_vars
   end
 end

@@ -37,6 +37,7 @@
   command: "git stash"
   args:
     chdir: "{{ atig_root }}/atig"
+  ignore_errors: yes
 
 - name: "Clone atig repository"
   become_user: "{{ atig_user }}"

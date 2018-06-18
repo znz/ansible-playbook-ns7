@@ -83,6 +83,12 @@ openvpn_nat_rules_6: |
   COMMIT
   # END OPENVPN RULES
 
+docker_ce_channel: "stable"
+
+stage_etc_hosts:
+- regexp: '^10\.0\.2\.15 '
+  line: '10.0.2.15 ovpn'
+
 allow_forward_from_ipv4: "192.168.8.0/24"
 allow_forward_from_ipv6: "fd00:abcd:abcd:abcd::/64"
 allow_forward_tcp_ports:

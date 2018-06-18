@@ -15,3 +15,4 @@
 - src: https://github.com/znz/ansible-role-openvpn-server
   version: master
   name: znz.openvpn-server
+- src: znz.docker
