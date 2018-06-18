@@ -15,6 +15,10 @@ sshd_allow_tcp_wrappers:
 byobu_users:
 - 'vagrant'
 
+docker_users:
+- 'nadoka'
+- 'vagrant'
+
 nadoka_irc_host: ''
 #nadoka_irc_port: 6697
 nadoka_irc_pass: "nil"

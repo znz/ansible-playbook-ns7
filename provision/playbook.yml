@@ -111,3 +111,9 @@
       rule: allow
       to_port: "{{ item }}"
     with_items: "{{ allow_forward_both_ports }}"
+  - name: "Add users to docker group"
+    user:
+      name: "{{ item }}"
+      groups: docker
+      append: yes
+    with_items: "{{ docker_users }}"
