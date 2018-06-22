@@ -34,6 +34,7 @@
     when: atig is not none and atig != []
   - role: znz.openvpn-server
   - role: znz.docker
+  - role: docker-compose
   tasks:
   - name: 'Update /etc/hosts'
     lineinfile:
