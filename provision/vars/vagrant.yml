@@ -102,10 +102,11 @@ allow_forward_both_ports:
 - 53
 - 443
 
-allow_forward_from_docker: "172.17.0.0/16"
+allow_forward_docker: "172.16.0.0/12"
 allow_forward_tcp_ports_from_docker:
 - 80
 allow_forward_udp_ports_from_docker: []
 allow_forward_both_ports_from_docker:
 - 53
 - 443
+allow_forward_tcp_ports_to_docker: []
