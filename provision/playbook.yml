@@ -118,3 +118,26 @@
       groups: docker
       append: yes
     with_items: "{{ docker_users }}"
+  - name: "Allow forward tcp ports from docker"
+    ufw:
+      from_ip: "{{ allow_forward_from_docker }}"
+      proto: tcp
+      route: yes
+      rule: allow
+      to_port: "{{ item }}"
+    with_items: "{{ allow_forward_tcp_ports_from_docker }}"
+  - name: "Allow forward udp ports from docker"
+    ufw:
+      from_ip: "{{ allow_forward_from_docker }}"
+      proto: udp
+      route: yes
+      rule: allow
+      to_port: "{{ item }}"
+    with_items: "{{ allow_forward_udp_ports_from_docker }}"
+  - name: "Allow forward tcp/udp ports from docker"
+    ufw:
+      from_ip: "{{ allow_forward_from_docker }}"
+      route: yes
+      rule: allow
+      to_port: "{{ item }}"
+    with_items: "{{ allow_forward_both_ports_from_docker }}"
