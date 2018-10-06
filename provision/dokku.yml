@@ -14,3 +14,16 @@
   - role: znz.sshd
     sshd_allow_users:
     - 'dokku'
+  tasks:
+  - name: 'ufw allow out on docker0 proto tcp'
+    # allow nginx to app
+    ufw:
+      direction: out
+      interface: docker0
+      proto: tcp
+      rule: allow
+  - name: "Add nadoka to docker group for WatchBot"
+    user:
+      name: nadoka
+      groups: docker
+      append: yes
