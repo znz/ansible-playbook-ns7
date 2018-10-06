@@ -1,4 +1,0 @@
----
-docker_compose_version: "1.21.2"
-docker_compose_filename: "docker-compose-Linux-x86_64"
-docker_compose_sha256: "8a11713e11ed73abcb3feb88cd8b5674b3320ba33b22b2ba37915b4ecffdf042"

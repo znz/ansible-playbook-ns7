@@ -16,3 +16,4 @@
   version: master
   name: znz.openvpn-server
 - src: znz.docker
+- src: znz.dokku

@@ -5,7 +5,6 @@
   - vars/{{ stage }}.yml
   roles:
   - role: znz.docker
-  - role: docker-compose
   tasks:
   - name: "Add users to docker group"
     user:

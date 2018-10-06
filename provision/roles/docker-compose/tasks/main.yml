@@ -1,9 +1,0 @@
----
-- name: "Download docker-compose"
-  get_url:
-    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/{{ docker_compose_filename }}"
-    dest: "/usr/local/bin/docker-compose"
-    checksum: "sha256:{{ docker_compose_sha256 }}"
-    owner: "root"
-    group: "root"
-    mode: 0755
