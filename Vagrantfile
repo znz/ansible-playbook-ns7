@@ -61,7 +61,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     extra_vars[:atig] = ENV['ATIG_USERNAMES'].to_s.split(',').map.with_index { |username, idx|
       {
         username: username,
-        realname: 'sid only stream',
+        realname: 'sid only',
         atig_port: 16668+idx,
         port: 26668+idx,
         host: 'nil',

@@ -17,7 +17,7 @@ atig_group_gid: "{{ atig_user_uid }}"
 
 atig:
 - username: "TwitterAccount" # https://atig.github.io/quickstart.html
-  realname: "sid only stream" # https://atig.github.io/options.html
+  realname: "sid only" # https://atig.github.io/options.html
   acl: |
     deny all
     allow 127.0.0.1
