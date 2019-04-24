@@ -1,0 +1,61 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+  vars_files:
+  - vars/{{ stage }}.yml
+  tasks:
+  - name: "Install zabbix-agent"
+    apt: name=zabbix-agent
+
+  - name: '/etc/zabbix/zabbix_agentd.conf.d/crl_next_update.conf'
+    copy:
+      content: |
+        UserParameter=crl.next_update.openvpn-server,ruby -r openssl -e 'p File.open(ARGV.shift){|f|OpenSSL::X509::CRL.new(f)}.next_update-Time.now' /etc/openvpn/server/crl.pem
+        UserParameter=crl.openvpn-server,ruby -r openssl -e 'p File.open(ARGV.shift){|f|OpenSSL::X509::CRL.new(f)}.next_update-Time.now' /etc/openvpn/server/crl.pem
+      dest: '/etc/zabbix/zabbix_agentd.conf.d/crl_next_update.conf'
+      owner: 'root'
+      group: 'zabbix'
+      mode: 0644
+
+  - name: '/etc/zabbix/zabbix_agentd.psk'
+    copy:
+      content: "{{ zabbix_agentd_psk }}"
+      dest: '/etc/zabbix/zabbix_agentd.psk'
+      owner: 'root'
+      group: 'zabbix'
+      mode: 0640
+
+  - name: '/etc/zabbix/zabbix_agentd.conf.d/psk.conf'
+    copy:
+      content: |
+        TLSConnect=psk
+        TLSAccept=psk
+        TLSPSKIdentity=ns7
+        TLSPSKFile=/etc/zabbix/zabbix_agentd.psk
+      dest: '/etc/zabbix/zabbix_agentd.conf.d/psk.conf'
+      owner: 'root'
+      group: 'zabbix'
+      mode: 0644
+
+  - name: '/etc/zabbix/zabbix_agentd.conf.d/server.conf'
+    copy:
+      content: |
+        Server=127.0.0.1,{{ zabbix_agentd_servers | join(',') }}
+      dest: '/etc/zabbix/zabbix_agentd.conf.d/server.conf'
+      owner: 'root'
+      group: 'zabbix'
+      mode: 0644
+
+  - name: 'ufw allow to zabbix_agentd'
+    ufw:
+      proto: tcp
+      from_ip: "{{ item }}"
+      rule: allow
+      to_port: 10050
+    with_items: "{{ zabbix_agentd_servers }}"
+
+  - name: 'restart zabbix-agent'
+    systemd:
+      name: 'zabbix-agent.service'
+      state: restarted
