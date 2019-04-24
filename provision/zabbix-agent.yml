@@ -55,6 +55,26 @@
       to_port: 10050
     with_items: "{{ zabbix_agentd_servers }}"
 
+  - name: '/opt/nadoka/stat-fprog.sh'
+    copy:
+      content: |
+        #!/bin/sh
+        exec stat -c %s /tmp/systemd-private-*-nadoka@fprog.service-*/tmp/*/fprog-CS-servers/$(date +%y%m%d).log
+      dest: '/opt/nadoka/stat-fprog.sh'
+      owner: 'root'
+      group: 'root'
+      mode: 0755
+
+  - name: '/etc/sudoers.d/zabbix'
+    copy:
+      content: |
+        zabbix ALL=(ALL) NOPASSWD:/opt/nadoka/stat-fprog.sh
+      dest: '/etc/sudoers.d/zabbix'
+      owner: 'root'
+      group: 'root'
+      mode: 0440
+      validate: 'visudo -cf %s'
+
   - name: 'restart zabbix-agent'
     systemd:
       name: 'zabbix-agent.service'
