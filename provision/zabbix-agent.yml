@@ -65,15 +65,36 @@
       group: 'root'
       mode: 0755
 
+  - name: '/opt/nadoka/stat-atig.sh'
+    copy:
+      content: |
+        #!/bin/sh
+        exec stat -c %s /home/nadoka/log/atig-$1/CS-twitter/$(date +%y/%m%d).log
+      dest: '/opt/nadoka/stat-atig.sh'
+      owner: 'root'
+      group: 'root'
+      mode: 0755
+
   - name: '/etc/sudoers.d/zabbix'
     copy:
       content: |
         zabbix ALL=(ALL) NOPASSWD:/opt/nadoka/stat-fprog.sh
+        zabbix ALL=(ALL) NOPASSWD:/opt/nadoka/stat-atig.sh
       dest: '/etc/sudoers.d/zabbix'
       owner: 'root'
       group: 'root'
       mode: 0440
       validate: 'visudo -cf %s'
+
+  - name: '/etc/zabbix/zabbix_agentd.conf.d/nadoka.conf'
+    copy:
+      content: |
+        UserParameter=nadoka.stat.fprog,sudo /opt/nadoka/stat-fprog.sh
+        UserParameter=nadoka.stat.atig[*],sudo /opt/nadoka/stat-atig.sh $1
+      dest: '/etc/zabbix/zabbix_agentd.conf.d/nadoka.conf'
+      owner: 'root'
+      group: 'zabbix'
+      mode: 0644
 
   - name: 'restart zabbix-agent'
     systemd:
