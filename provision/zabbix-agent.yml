@@ -79,7 +79,6 @@
     copy:
       content: |
         zabbix ALL=(ALL) NOPASSWD:/opt/nadoka/stat-fprog.sh
-        zabbix ALL=(ALL) NOPASSWD:/opt/nadoka/stat-atig.sh
       dest: '/etc/sudoers.d/zabbix'
       owner: 'root'
       group: 'root'
@@ -90,7 +89,7 @@
     copy:
       content: |
         UserParameter=nadoka.stat.fprog,sudo /opt/nadoka/stat-fprog.sh
-        UserParameter=nadoka.stat.atig[*],sudo /opt/nadoka/stat-atig.sh $1
+        UserParameter=nadoka.stat.atig[*],/opt/nadoka/stat-atig.sh $1
       dest: '/etc/zabbix/zabbix_agentd.conf.d/nadoka.conf'
       owner: 'root'
       group: 'zabbix'
